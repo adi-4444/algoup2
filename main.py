@@ -6,7 +6,6 @@ from utils.helpers import check_upstox_token_validity, get_instruments, get_inst
 from upstox_client import api, UserApi
 from get_historical_data import get_historical_data
 from data_handler import DataHandler
-from strategies import strategies
 from trade import TradeHandler
 
 
