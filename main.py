@@ -50,7 +50,6 @@ async def main():
             # print(tick_data['feeds'][tick]['ff']['marketFF']['ltpc']['ltp'])
             # print('-----------------------------------')
             handler.tick_handler(tick_data['feeds'][tick],tick)
-            # strategies(tick_data['feeds'][tick],tick)
             # trade.handle_trade(tick_data['feeds'][tick]['ff']['marketFF']['ltpc']['ltp'],tick)
         pass
         
