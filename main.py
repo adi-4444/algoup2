@@ -10,7 +10,10 @@ from trade import TradeHandler
 
 
 ACCESS_TOKEN_FILE = 'access_token.txt'
-trading_symbols = ['BANKNIFTY24JULFUT']
+trading_symbols = ['BANKNIFTY2461950000PE']
+
+trade_entry = False
+trade_exit = False
 
 async def main():
     print('Service started...')
@@ -39,17 +42,41 @@ async def main():
         
     handler = DataHandler()
     trade = TradeHandler()
+
     async def on_connect():
         
         print("Connection established")
 
     async def on_ticks(tick_data):
+        global trade_entry, trade_exit
+        
         for tick in tick_data['feeds']:
-            # print('----------live feed------------------')
-            # print(tick_data['feeds'][tick]['ff']['marketFF']['ltpc']['ltp'])
-            # print('-----------------------------------')
-            handler.tick_handler(tick_data['feeds'][tick],tick)
-            # trade.handle_trade(tick_data['feeds'][tick]['ff']['marketFF']['ltpc']['ltp'],tick)
+                        
+            ltp = tick_data['feeds'][tick]['ff']['marketFF']['ltpc']['ltp']
+            print('ltp :',ltp)
+            if not trade_entry and ltp <= 370:
+                print('----------entry ----------------')
+                buy_average, executed_buy_quantity_total, buy_executed_symbol = trade.place_buy_market_order(tick,15)
+                print('buy_average :',buy_average)
+                print('executed_buy_quantity_total :',executed_buy_quantity_total)
+                print('buy_executed_symbol :',buy_executed_symbol)
+                trade_entry = True
+                
+            elif trade_entry and not trade_exit and ltp >=375:
+                print('----------target ----------------')
+                sell_average, executed_sell_quantity_total, sell_executed_symbol = trade.place_sell_market_order(tick,15)
+                print('sell_average :',sell_average)
+                print('executed_sell_quantity_total :',executed_sell_quantity_total)
+                print('sell_executed_symbol :',sell_executed_symbol)
+                trade_exit = True
+                
+            elif trade_entry and not trade_exit and ltp <=365:
+                print('----------stop loss ----------------')
+                sell_average, executed_sell_quantity_total, sell_executed_symbol = trade.place_sell_market_order(tick,15)
+                print('sell_average :',sell_average)
+                print('executed_sell_quantity_total :',executed_sell_quantity_total)
+                print('sell_executed_symbol :',sell_executed_symbol)
+                trade_exit = True
         pass
         
     async def on_close():

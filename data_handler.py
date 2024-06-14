@@ -39,13 +39,12 @@ class DataHandler:
         # Extract the 1-minute interval data from the tick data
         ohlc_data = tick_data['ff']['marketFF']['marketOHLC']['ohlc'][2]
         current_oi = tick_data['ff']['marketFF']['eFeedDetails']['oi']
-        print('---------------------------processed Ticks -----------------------------')
+        ltp = tick_data['ff']['marketFF']['ltpc']['ltp']
+
         print("ohlc_data", ohlc_data)
         # Convert timestamp to a datetime object
         timestamp = int(ohlc_data['ts'])
         timestamp = datetime.fromtimestamp(timestamp / 1000)
-        print("timestamp", timestamp)
-        print('-----------------------------------------------------------------------')
         
         open_price = ohlc_data['open']
         high_price = ohlc_data['high']
@@ -55,9 +54,9 @@ class DataHandler:
 
         # Aggregate this one minute interval data into 3, 5, 15 minute interval data
         for interval in self.intervals:
-            self.aggregate_data(interval, timestamp, open_price, high_price, low_price, close_price, volume, current_oi, instrument_key)
+            self.aggregate_data(interval, timestamp, open_price, high_price, low_price, close_price, volume, current_oi, instrument_key,ltp)
 
-    def aggregate_data(self, interval, timestamp, open_price, high_price, low_price, close_price, volume, current_oi, instrument_key):
+    def aggregate_data(self, interval, timestamp, open_price, high_price, low_price, close_price, volume, current_oi, instrument_key,ltp):
         if len(self.data[interval]) > 0:
             last_data = self.data[interval][-1]
             if isinstance(last_data['date'], datetime):
@@ -103,7 +102,7 @@ class DataHandler:
             self.data[interval].append(new_data)
 
         # Pass the interval data to the indicators to calculate the indicators
-        run_indicators(self.data[interval], INTERVAL_MAP[interval], instrument_key)
+        run_indicators(self.data[interval], INTERVAL_MAP[interval], instrument_key,ltp)
 
         # Update the data to the file on every tick data change in data[interval]
         self.update_data(instrument_key)

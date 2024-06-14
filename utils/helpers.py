@@ -35,6 +35,11 @@ def get_instrument_key_by_tradingsymbol(tradingsymbol):
       instruments = pd.read_csv('nfo_instrument.csv')
       return instruments[instruments['tradingsymbol'] == tradingsymbol]['instrument_key'].values[0]
 
+def get_instrument_sybmbol_by_key(instrument_key):
+      logging.info('Fetching instrument symbol...')
+      instruments = pd.read_csv('nfo_instrument.csv')
+      return instruments[instruments['instrument_key'] == instrument_key]['tradingsymbol'].values[0]
+
 def sanitize_filename(filename):
     # Replace invalid characters with underscores or other valid characters
     return filename.replace('NSE_FO|', '')

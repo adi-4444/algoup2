@@ -7,11 +7,12 @@ import pickle
 from utils.helpers import sanitize_filename
 from stock_indicators.indicators.common import Quote
 
-def run_indicators(data, interval, instrument_key): 
-    df = pd.DataFrame(data)
-    
+
+def run_indicators(data, interval, instrument_key, ltp): 
+        
     qdf = pd.DataFrame(data)
     qdf['date'] = pd.to_datetime(qdf['date'])
+    
     # Convert 'date' column to datetime objects
     candle_quotes = [Quote(date,open,high,low,close,volume) for date,open,high,low,close,volume in zip(qdf['date'], qdf['open'], qdf['high'], qdf['low'], qdf['close'], qdf['volume'])]
     # renko using si
@@ -46,6 +47,9 @@ def run_indicators(data, interval, instrument_key):
     renko_df["macd_fast_blue"] = renko_macd_df['macd_fast_blue']
     renko_df['macd_slow_red'] = renko_macd_df['macd_slow_red']
     renko_df["macd_signal-hist"] = renko_macd_df['macd_signal-hist']
+    # print(f'minute minute_renko_close: {round(minute_renko_close,2).to_string(index=False, header=False)}')
+
+    print(renko_df['macd_fast_blue'].to_string(index=False, header=False)[-1:])
     
     renko_csvfile = os.path.join('data', f"renko_{sanitize_filename(str(instrument_key))}_{interval}.csv")
     renko_df.to_csv(renko_csvfile, index=False)
