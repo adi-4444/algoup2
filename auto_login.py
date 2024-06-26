@@ -23,7 +23,9 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 def get_webdriver():
     options = webdriver.ChromeOptions()
     options.add_argument('--no-sandbox')
-    # options.add_argument('--headless')
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--disable-dev-shm-usage')
     return webdriver.Chrome(options=options)
 
 def navigate_to_auth(driver):
@@ -107,5 +109,5 @@ def auto_login():
 
 
 # this def is used to run the auto_login function directly
-# if __name__ == '__main__':
-#     auto_login()
+if __name__ == '__main__':
+    auto_login()

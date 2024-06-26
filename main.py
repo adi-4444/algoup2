@@ -54,29 +54,29 @@ async def main():
                         
             ltp = tick_data['feeds'][tick]['ff']['marketFF']['ltpc']['ltp']
             print('ltp :',ltp)
-            if not trade_entry and ltp <= 370:
-                print('----------entry ----------------')
-                buy_average, executed_buy_quantity_total, buy_executed_symbol = trade.place_buy_market_order(tick,15)
-                print('buy_average :',buy_average)
-                print('executed_buy_quantity_total :',executed_buy_quantity_total)
-                print('buy_executed_symbol :',buy_executed_symbol)
-                trade_entry = True
+            # if not trade_entry and ltp <= 370:
+            #     print('----------entry ----------------')
+            #     buy_average, executed_buy_quantity_total, buy_executed_symbol = trade.place_buy_market_order(tick,15)
+            #     print('buy_average :',buy_average)
+            #     print('executed_buy_quantity_total :',executed_buy_quantity_total)
+            #     print('buy_executed_symbol :',buy_executed_symbol)
+            #     trade_entry = True
                 
-            elif trade_entry and not trade_exit and ltp >=375:
-                print('----------target ----------------')
-                sell_average, executed_sell_quantity_total, sell_executed_symbol = trade.place_sell_market_order(tick,15)
-                print('sell_average :',sell_average)
-                print('executed_sell_quantity_total :',executed_sell_quantity_total)
-                print('sell_executed_symbol :',sell_executed_symbol)
-                trade_exit = True
+            # elif trade_entry and not trade_exit and ltp >=375:
+            #     print('----------target ----------------')
+            #     sell_average, executed_sell_quantity_total, sell_executed_symbol = trade.place_sell_market_order(tick,15)
+            #     print('sell_average :',sell_average)
+            #     print('executed_sell_quantity_total :',executed_sell_quantity_total)
+            #     print('sell_executed_symbol :',sell_executed_symbol)
+            #     trade_exit = True
                 
-            elif trade_entry and not trade_exit and ltp <=365:
-                print('----------stop loss ----------------')
-                sell_average, executed_sell_quantity_total, sell_executed_symbol = trade.place_sell_market_order(tick,15)
-                print('sell_average :',sell_average)
-                print('executed_sell_quantity_total :',executed_sell_quantity_total)
-                print('sell_executed_symbol :',sell_executed_symbol)
-                trade_exit = True
+            # elif trade_entry and not trade_exit and ltp <=365:
+            #     print('----------stop loss ----------------')
+            #     sell_average, executed_sell_quantity_total, sell_executed_symbol = trade.place_sell_market_order(tick,15)
+            #     print('sell_average :',sell_average)
+            #     print('executed_sell_quantity_total :',executed_sell_quantity_total)
+            #     print('sell_executed_symbol :',sell_executed_symbol)
+            #     trade_exit = True
         pass
         
     async def on_close():
@@ -86,7 +86,7 @@ async def main():
         # print("Received order update:", order_data)
         pass
 
-    await websocket_handler(access_token, instrument_keys, on_connect, on_ticks, on_close, on_order_update)
+    # await websocket_handler(access_token, instrument_keys, on_connect, on_ticks, on_close, on_order_update)
 
 if __name__ == '__main__':
     asyncio.run(main())

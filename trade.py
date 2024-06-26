@@ -7,6 +7,7 @@ from utils.helpers import sanitize_filename, get_instrument_sybmbol_by_key
 class TradeHandler():
     def __init__(self):
         self.uri = "https://api.upstox.com/v2/order/place"
+        self.get_order_details_url = "https://api.upstox.com/v2/order/details"
         with open('access_token.txt', 'r') as f:
             self.access_token = f.read().strip()
         self.headers = {
@@ -250,14 +251,29 @@ class TradeHandler():
             
 #-----------upto here they are for manual trades -------------------
             
+
     def get_order_data(self, order_id):
-        url = f"https://api.upstox.com/v2/order/details?order_id={order_id}"
-        payload={}
-        res = rq.get(url, headers=self.headers, data=payload)
-     
-        executed_price = res.json()['data']['average_price']
-        executed_quantity = res.json()['data']['quantity']
-        executed_symbol = res.json()['data']['trading_symbol']
-        
-        return executed_price, executed_quantity, executed_symbol
-    
+        params = {'order_id': order_id}
+        try:
+            response = rq.get(self.get_order_details_url, headers=self.headers, params=params)
+            response.raise_for_status()
+            if response.get('status') == 'success':
+                data = response.json().get('data', {})
+
+                executed_price = data.get('average_price')
+                executed_quantity = data.get('quantity')
+                executed_symbol = data.get('trading_symbol')
+
+                if executed_price is None or executed_quantity is None or executed_symbol is None:
+                    raise ValueError("Missing data in the API response")
+
+                return executed_price, executed_quantity, executed_symbol
+
+        except rq.exceptions.RequestException as e:
+            print(f"HTTP error occurred: {e}")
+        except ValueError as ve:
+            print(f"Value error: {ve}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+        return None, None, None  # Return default values in case of error
