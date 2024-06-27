@@ -6,7 +6,7 @@ from utils.helpers import check_upstox_token_validity, get_instruments, get_inst
 from upstox_client import api, UserApi
 from get_historical_data import get_historical_data
 from data_handler import DataHandler
-from trade import TradeHandler
+from trade2 import TradeHandler2
 
 
 ACCESS_TOKEN_FILE = 'access_token.txt'
@@ -17,6 +17,7 @@ trade_exit = False
 
 async def main():
     print('Service started...')
+    #---------------Auto login and get historical data----------------
     if os.path.exists(ACCESS_TOKEN_FILE):
         with open(ACCESS_TOKEN_FILE, 'r') as a_file:
             access_token = a_file.read().strip()
@@ -40,53 +41,39 @@ async def main():
     for instrument_key in instrument_keys:
         get_historical_data(instrument_key)
         
+    #---------------Auto login and get historical data----------------
+
     handler = DataHandler()
-    trade = TradeHandler()
+    trade = TradeHandler2()
+    
+    #---------------Websocket handler----------------
 
     async def on_connect():
         
         print("Connection established")
 
     async def on_ticks(tick_data):
-        global trade_entry, trade_exit
         
         for tick in tick_data['feeds']:
                         
             ltp = tick_data['feeds'][tick]['ff']['marketFF']['ltpc']['ltp']
             print('ltp :',ltp)
-            # if not trade_entry and ltp <= 370:
-            #     print('----------entry ----------------')
-            #     buy_average, executed_buy_quantity_total, buy_executed_symbol = trade.place_buy_market_order(tick,15)
-            #     print('buy_average :',buy_average)
-            #     print('executed_buy_quantity_total :',executed_buy_quantity_total)
-            #     print('buy_executed_symbol :',buy_executed_symbol)
-            #     trade_entry = True
-                
-            # elif trade_entry and not trade_exit and ltp >=375:
-            #     print('----------target ----------------')
-            #     sell_average, executed_sell_quantity_total, sell_executed_symbol = trade.place_sell_market_order(tick,15)
-            #     print('sell_average :',sell_average)
-            #     print('executed_sell_quantity_total :',executed_sell_quantity_total)
-            #     print('sell_executed_symbol :',sell_executed_symbol)
-            #     trade_exit = True
-                
-            # elif trade_entry and not trade_exit and ltp <=365:
-            #     print('----------stop loss ----------------')
-            #     sell_average, executed_sell_quantity_total, sell_executed_symbol = trade.place_sell_market_order(tick,15)
-            #     print('sell_average :',sell_average)
-            #     print('executed_sell_quantity_total :',executed_sell_quantity_total)
-            #     print('sell_executed_symbol :',sell_executed_symbol)
-            #     trade_exit = True
+            
+            # here tick means instrument id NSE_FO|35004
+            trade.handle_trades(ltp, tick)
+            
         pass
         
     async def on_close():
         print("Connection closed")
 
     async def on_order_update(order_data):
-        # print("Received order update:", order_data)
+        print("Received order update:", order_data)
         pass
 
-    # await websocket_handler(access_token, instrument_keys, on_connect, on_ticks, on_close, on_order_update)
+    await websocket_handler(access_token, instrument_keys, on_connect, on_ticks, on_close, on_order_update)
 
+    #---------------Websocket handler----------------
+    
 if __name__ == '__main__':
     asyncio.run(main())
